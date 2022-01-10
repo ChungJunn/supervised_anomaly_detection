@@ -32,7 +32,7 @@ CLF_DIM_FC_HIDDEN=600
 CLF_DIM_OUTPUT=2
 
 # modified model
-USE_PREV_PRED=1
+USE_PREV_PRED=0
 TEACHER_FORCING_RATIO=0.5
 if [ $USE_PREV_PRED == 1 ]
 then
@@ -56,7 +56,7 @@ N_DECAY=3
 export NEPTUNE_API_TOKEN="eyJhcGlfYWRkcmVzcyI6Imh0dHBzOi8vYXBwLm5lcHR1bmUuYWkiLCJhcGlfdXJsIjoiaHR0cHM6Ly9hcHAubmVwdHVuZS5haSIsImFwaV9rZXkiOiJjZDBmMTBmOS0zZDJjLTRkM2MtOTA0MC03YmQ5OThlZTc5N2YifQ=="
 export CUDA_VISIBLE_DEVICES=$1
 
-/usr/bin/python3.8 ad_main.py \
+/usr/bin/python3.8 ad_individual_main.py \
     --dataset=$DATASET \
     --reduce=$REDUCE \
     --optimizer=$OPTIMIZER \

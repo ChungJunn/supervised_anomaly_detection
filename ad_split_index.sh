@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DATASET="lad2"
+DATASET=$1
 DATA_DIR=$HOME"/supervised_anomaly_detection/data/"
 RNN_LEN=16
 TRAIN_RATIO=0.65 # 0.8

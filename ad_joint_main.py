@@ -15,9 +15,7 @@ import sys
 import time
 import random
 import os
-
 import argparse
-import neptune
 
 from ad_data import AD_RNN_Dataset
 from ad_utils import call_model
@@ -337,7 +335,8 @@ if __name__ == '__main__':
         os.mkdir(args.save_dir)
 
     if args.use_neptune == 1:
-        neptune.init('cjlee/apnoms2021')
+        import neptune
+        neptune.init("cjlee/supervised-anomaly-detection")
         experiment = neptune.create_experiment(name=args.exp_name, params=params)
         args.out_file = experiment.id + '.pth'
     else:

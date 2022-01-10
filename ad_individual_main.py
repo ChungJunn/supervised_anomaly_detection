@@ -15,9 +15,7 @@ import math
 import sys
 import time
 import os
-
 import argparse
-import neptune
 
 from ad_utils import call_model
 from ad_model import RNN_enc_RNN_clf, Transformer_enc_RNN_clf
@@ -256,7 +254,8 @@ if __name__ == '__main__':
         os.mkdir(args.save_dir)
 
     if args.use_neptune == 1:
-        neptune.init('cjlee/apply-testbed')
+        import neptune
+        neptune.init(project="cjlee/supervised-anomaly-detection")
         experiment = neptune.create_experiment(name=args.exp_name, params=params)
         args.out_file = experiment.id + '.pth'
     else:

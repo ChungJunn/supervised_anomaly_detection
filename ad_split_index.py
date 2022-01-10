@@ -8,7 +8,7 @@ import sys
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--dataset', type=str, default='tpi_train')
+    parser.add_argument('--dataset', type=str)
     parser.add_argument('--data_dir', type=str)
     parser.add_argument('--rnn_len', type=int, default=16)
     parser.add_argument('--train_ratio', type=float)

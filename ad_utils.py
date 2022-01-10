@@ -1,18 +1,13 @@
 import sys
 
 def call_model(args, device):
-    from ad_model import RNN_enc_RNN_clf, Transformer_enc_RNN_clf, Transformer_enc_DNN_clf, None_enc_DNN_clf, None_enc_RNN_clf
+    from ad_model import RNN_enc_RNN_clf, Transformer_enc_RNN_clf, Transformer_enc_DNN_clf
     if args.encoder == 'rnn' and args.classifier == 'rnn':
         model = RNN_enc_RNN_clf(args)
     elif args.encoder == 'transformer' and args.classifier == 'rnn':
         model = Transformer_enc_RNN_clf(args)
     elif args.encoder == "transformer" and args.classifier == "dnn":
         model = Transformer_enc_DNN_clf(args)
-    elif args.encoder == "none" and args.classifier == "dnn":
-        model = None_enc_DNN_clf(args)
-    elif args.encoder == "none" and args.classifier == "rnn":
-        model = None_enc_RNN_clf(args)
-
     else:
         print("encoder and classifier mismatch")
         sys.exit(-1)
