@@ -40,21 +40,21 @@ def train_main(args, neptune):
                             csv_path=args.csv_path,
                             ids_path=args.ids_path,
                             stat_path=args.stat_path,
-                            data_name=args.data_name,
+                            data_name=args.dataset,
                             rnn_len=args.rnn_len,
                             test_dnn=test_dnn)
     valid = AD_RNN_Dataset(mode="valid",
                             csv_path=args.csv_path,
                             ids_path=args.ids_path,
                             stat_path=args.stat_path,
-                            data_name=args.data_name,
+                            data_name=args.dataset,
                             rnn_len=args.rnn_len,
                             test_dnn=test_dnn)
     test = AD_RNN_Dataset(mode="test",
                             csv_path=args.csv_path,
                             ids_path=args.ids_path,
                             stat_path=args.stat_path,
-                            data_name=args.data_name,
+                            data_name=args.dataset,
                             rnn_len=args.rnn_len,
                             test_dnn=test_dnn)
 
@@ -83,7 +83,6 @@ def train_main(args, neptune):
     bc = 0 # bad counter
     sc = 0 # step counter
     best_valid_loss = None
-    savedir = './result/' + args.out_file
 
     for ei in range(args.max_epoch):
         for li, (x_data, y_data) in enumerate(trainiter):
@@ -155,7 +154,8 @@ def train_main(args, neptune):
         if neptune is not None: neptune.log_metric('valid_loss', ei+1, valid_loss)
 
         if ei == 0 or valid_loss < best_valid_loss:
-            torch.save(model, savedir)
+            save_path = args.save_dir + args.out_file
+            torch.save(model, save_path)
             bc = 0
             best_valid_loss = valid_loss
             print('found new best model')
@@ -176,7 +176,7 @@ def train_main(args, neptune):
 
             print('bad counter == %d' % (bc))
 
-    model = torch.load(savedir)
+    model = torch.load(save_path)
 
     targets, preds = eval_forward(model, testiter, args.use_prev_pred, device)
     acc, prec, rec, f1 = eval_binary(targets, preds)
@@ -195,14 +195,13 @@ if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser()
     # task
-    parser.add_argument('--label', type=str)
+    parser.add_argument('--dataset', type=str)
     parser.add_argument('--use_neptune', type=int)
     parser.add_argument('--use_prev_pred', type=int)
     parser.add_argument('--teacher_forcing_ratio', type=float)
     # exp_name
     parser.add_argument('--exp_name', type=str)
     # dataset
-    parser.add_argument('--dataset', type=str)
     parser.add_argument('--dim_input', type=int)
     parser.add_argument('--rnn_len', type=int)
     parser.add_argument('--csv_path', type=str)
@@ -213,7 +212,6 @@ if __name__ == '__main__':
     # feature mapping
     parser.add_argument('--use_feature_mapping', type=int)
     parser.add_argument('--dim_feature_mapping', type=int)
-
     # enc
     parser.add_argument('--encoder', type=str)
     parser.add_argument('--nlayer', type=int)
@@ -253,6 +251,10 @@ if __name__ == '__main__':
     args = parser.parse_args()
     params = vars(args)
 
+    args.save_dir = "./result/"
+    if not os.path.exists(args.save_dir):
+        os.mkdir(args.save_dir)
+
     if args.use_neptune == 1:
         neptune.init('cjlee/apply-testbed')
         experiment = neptune.create_experiment(name=args.exp_name, params=params)
@@ -260,10 +262,6 @@ if __name__ == '__main__':
     else:
         neptune=None
         args.out_file = 'dummy.pth'
-
-    # in case of declaring
-    if args.use_prev_pred == 1:
-        args.dim_input += 1
 
     print('parameters:')
     print('='*90)

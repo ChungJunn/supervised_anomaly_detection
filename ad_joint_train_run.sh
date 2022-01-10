@@ -5,12 +5,16 @@ EXP_NAME="code_cleaning"
 USE_NEPTUNE=0
 
 # dataset
-DATASET="wsd"           # wsd, lad1, lad2
+DATASET1='wsd'
+DATASET2='lad2'
 RNN_LEN=16
 BASE_DIR=$HOME'/supervised_anomaly_detection/data/'
-CSV_PATH=$BASE_DIR''$DATASET'.csv'
-IDS_PATH=$BASE_DIR''$DATASET'.indices.rnn_len16.pkl'
-STAT_PATH=$CSV_PATH'.stat'
+CSV_PATH1=$BASE_DIR''$DATASET1'.csv'
+CSV_PATH2=$BASE_DIR''$DATASET2'.csv'
+IDS_PATH1=$BASE_DIR''$DATASET1'.indices.rnn_len16.pkl'
+IDS_PATH2=$BASE_DIR''$DATASET2'.indices.rnn_len16.pkl'
+STAT_PATH1=$CSV_PATH1'.stat'
+STAT_PATH2=$CSV_PATH2'.stat'
 
 # encoder
 DIM_FEATURE_MAPPING=24
@@ -24,7 +28,7 @@ DIM_FEEDFORWARD=48      # transformer
 REDUCE="self-attention" # mean, max, or self-attention
 
 # classifier
-CLASSIFIER="rnn"        # dnn or rnn
+CLASSIFIER='rnn' # dnn or rnn
 CLF_N_LSTM_LAYERS=1
 CLF_N_FC_LAYERS=3
 CLF_DIM_LSTM_HIDDEN=200
@@ -32,7 +36,7 @@ CLF_DIM_FC_HIDDEN=600
 CLF_DIM_OUTPUT=2
 
 # modified model
-USE_PREV_PRED=1
+USE_PREV_PRED=0
 TEACHER_FORCING_RATIO=0.5
 if [ $USE_PREV_PRED == 1 ]
 then
@@ -56,13 +60,14 @@ N_DECAY=3
 export NEPTUNE_API_TOKEN="eyJhcGlfYWRkcmVzcyI6Imh0dHBzOi8vYXBwLm5lcHR1bmUuYWkiLCJhcGlfdXJsIjoiaHR0cHM6Ly9hcHAubmVwdHVuZS5haSIsImFwaV9rZXkiOiJjZDBmMTBmOS0zZDJjLTRkM2MtOTA0MC03YmQ5OThlZTc5N2YifQ=="
 export CUDA_VISIBLE_DEVICES=$1
 
-/usr/bin/python3.8 ad_main.py \
-    --dataset=$DATASET \
+/usr/bin/python3.8 ad_joint_train.py \
     --reduce=$REDUCE \
     --optimizer=$OPTIMIZER \
     --lr=$LR \
     --patience=$PATIENCE \
     --exp_name=$EXP_NAME \
+    --dataset1=$DATASET1 \
+    --dataset2=$DATASET2 \
     --max_epoch=$MAX_EPOCH \
     --batch_size=$BATCH_SIZE \
     --dim_lstm_hidden=$DIM_LSTM_HIDDEN \
@@ -80,12 +85,13 @@ export CUDA_VISIBLE_DEVICES=$1
     --clf_dim_lstm_hidden=$CLF_DIM_LSTM_HIDDEN \
     --clf_dim_fc_hidden=$CLF_DIM_FC_HIDDEN \
     --clf_dim_output=$CLF_DIM_OUTPUT \
-    --csv_path=$CSV_PATH \
-    --ids_path=$IDS_PATH \
-    --stat_path=$STAT_PATH \
-    --data_name=$DATA_NAME \
+    --csv_path1=$CSV_PATH1 \
+    --csv_path2=$CSV_PATH2 \
+    --ids_path1=$IDS_PATH1 \
+    --ids_path2=$IDS_PATH2 \
+    --stat_path1=$STAT_PATH1 \
+    --stat_path2=$STAT_PATH2 \
     --rnn_len=$RNN_LEN \
-    --dict_path=$DICT_PATH \
     --use_neptune=$USE_NEPTUNE \
     --use_scheduler=$USE_SCHEDULER \
     --step_size=$STEP_SIZE \

@@ -1,3 +1,5 @@
 data/*
 __pycache__/*
 libs/__pycache__/*
+./result/*
+result/*

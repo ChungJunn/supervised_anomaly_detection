@@ -158,6 +158,39 @@ def get_valid_loss(model, dataiter, criterion, use_prev_pred, device):
 
     return valid_loss
 
+def get_joint_valid_loss(model, dataiter1, dataiter2, criterion, use_prev_pred, device):
+    model.eval()
+    valid_loss = 0.0
+    n_batches = 0
+    ratio = 0.0
+    
+    for li, ((x_data1, y_data1), (x_data2, y_data2)) in enumerate(zip(dataiter1, dataiter2)):
+        Tx, Bn, V, D = x_data1.size()
+
+        if args.use_prev_pred == 1:
+            loss1 = forward(model, x_data1, y_data1, device, criterion, ratio)
+            loss2 = forward(model, x_data2, y_data2, device, criterion, ratio)
+
+            valid_loss += float(loss1.detach()) + float(loss2.detach())
+            valid_loss /= Tx
+
+        else:
+            x_data1, x_data2 = x_data1.to(dtype=torch.float32, device=device), x_data2.to(dtype=torch.float32, device=device)
+            y_data1, y_data2 = y_data1[:,-1].to(dtype=torch.int64, device=device), y_data2[:,-1].to(dtype=torch.int64, device=device)
+
+            out1, _ = model(x_data1)
+            out2, _ = model(x_data2)
+            
+            loss1 = criterion(out1, y_data1)
+            loss2 = criterion(out2, y_data2)
+
+            valid_loss += loss1.item() + loss2.item()
+
+    valid_loss /= (li + 1)
+    model.train()
+
+    return valid_loss
+
 if __name__ == '__main__':
     my_dict = {'label 1': {'precision':0.5,
                 'recall':1.0,
